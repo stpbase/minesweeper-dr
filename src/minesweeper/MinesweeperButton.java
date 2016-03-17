@@ -9,6 +9,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 @SuppressWarnings("serial")
+
+//Macht alle Interaktionen mit den Feldern
 public class MinesweeperButton extends JButton
 {	
 	private static final ImageIcon INIT_ICON = new ImageIcon(MinesweeperButton.class.getResource("/gfx/initial.jpg"));
