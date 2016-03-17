@@ -34,6 +34,7 @@ public class Minesweeper implements ActionListener
 		m_minesweeperGui.setMinesFound(4);
 	}
 	
+	//
 	public void startGame()
 	{
 		if (m_gameStarted)
@@ -48,6 +49,7 @@ public class Minesweeper implements ActionListener
 		System.out.println("Das ist ein Test");
 	}
 	
+	//Dropdown Feld für die Schwierigkeit des Spiels
 	public void actionPerformed (ActionEvent e) 
 	{
 		if (e.getSource() instanceof JComboBox<?>)
@@ -58,23 +60,28 @@ public class Minesweeper implements ActionListener
 		}
 		startGame();
 	}
-
+	
+	//Gibt aus wieviele Mine vorhanden sind
 	public int getMinesLeft() {
 		return m_minesLeft;
 	}
 
+	//Sobald auf eine Mine geklickt wir, wird der Counter herunter gesetzt
 	public void minusMines(int mines) {
 		this.m_minesLeft = m_minesLeft - mines;
 	}
 	
+	//Setzt die Minen
 	public void setMinesLeft(int mines) {
 		this.m_minesLeft = mines;
 	}
 
+	//Gibt Anzahl Leben zurück
 	public int getLivesLeft() {
 		return m_livesLeft;
 	}
 
+	//Sobald verloren wurde zählt es die Leben ab
 	public void minusLives(int lives) {
 		this.m_livesLeft = m_livesLeft - lives;
 	}
@@ -83,6 +90,7 @@ public class Minesweeper implements ActionListener
 		return m_difficulty;
 	}
 
+	//Setzt Groesse des Fensters bei der Schwierigkeit und Anzahl Felder
 	public void setDifficulty(String level) {
 		this.m_difficulty = level;
 		DifficultySettings diffSettings = new DifficultySettings (LEVELS.get(level), LEVELS.get(level));
