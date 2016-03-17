@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+//Fügt die Bilder ein
 public class ImageLoader
 {
 	public static BufferedImage loadImage(String path)
