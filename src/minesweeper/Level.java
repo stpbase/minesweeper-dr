@@ -7,9 +7,9 @@ public class Level {
 	//Schwierigkeitsgrad
 	@SuppressWarnings("serial")
 	public static final List<Level> LEVELS = new ArrayList<Level>() {{
-		add(new Level("Leicht", 5, 5, 0.15, 3));
-		add(new Level("Mittel", 7, 7, 0.2, 2)); 
-		add(new Level("Schwer", 10, 10, 0.25, 1)); 
+		add(new Level("Leicht", 5, 5, 0.2, 3));
+		add(new Level("Mittel", 7, 7, 0.25, 2)); 
+		add(new Level("Schwer", 10, 10, 0.3, 1)); 
 	}};
 	
 	private String m_levelBezeichnung;

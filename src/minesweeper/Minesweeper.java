@@ -1,5 +1,7 @@
 package minesweeper;
 
+import javax.swing.JOptionPane;
+
 public class Minesweeper
 {
     private int m_minesLeft;
@@ -57,6 +59,16 @@ public class Minesweeper
 	public void mineExploded() {
 		m_lifesLeft--;
 		m_minesLeft--;
+		
+		// GameOver Logik
+		if (m_lifesLeft == 0)
+		{
+			// Alle Felder aufdecken und Fehlermeldung ausgeben
+			m_minesweeperGui.exposeAll();
+			JOptionPane.showMessageDialog(null, "YOU'RE DEAD!", "Game Over!",
+                    JOptionPane.ERROR_MESSAGE);
+			startGame();
+		}
 	}
 
 	public Level getDifficulty() {

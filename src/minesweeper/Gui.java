@@ -51,6 +51,8 @@ public class Gui
 	//Neue Felder erstellen
 	public void createFields() 
 	{
+		m_fieldPanel.setVisible(false);
+		
 		int rows = m_startedGame.getDifficulty().getCountYFields();
 		int cols = m_startedGame.getDifficulty().getCountXFields();
 		
@@ -70,26 +72,30 @@ public class Gui
 			{
 				currButton = new MinesweeperButton(x, y);
 				currButton.addActionListener(new ActionListener() {
-			        public void actionPerformed(ActionEvent e) {
-			        	MinesweeperButton btn = (MinesweeperButton) e.getSource();
-			            if (btn.isMine())
-			            {
-			            	btn.setIcon(MinesweeperButton.MINE_ICON);
-			            	m_startedGame.mineExploded();
-			            	setLifesLeft(m_startedGame.getLifesLeft());
-			            	setMinesLeft(m_startedGame.getMinesLeft());
-			            }
-			            else
-			            {
-			            	int minesAround = countMines (btn.getGridLocation());
-			            	if (minesAround == 0)
+					public void actionPerformed(ActionEvent e) {
+						MinesweeperButton btn = (MinesweeperButton) e.getSource();
+						if (btn.isMine())
+						{
+							btn.setIcon(MinesweeperButton.MINE_ICON);
+			            	if (btn.isHidden())
 			            	{
-			            		exposeNeighbors(btn);
+			            		m_startedGame.mineExploded();
+			            		setLifesLeft(m_startedGame.getLifesLeft());
+			            		setMinesLeft(m_startedGame.getMinesLeft());
+			            		btn.setHidden(false);
 			            	}
-			            	btn.setIcon(minesAround);
-			            }
-			        }
-			    });
+						}
+						else
+						{
+							int minesAround = countMines (btn.getGridLocation());
+							if (minesAround == 0)
+							{
+								exposeNeighbors(btn);
+							}
+							btn.setIcon(minesAround);
+						}
+					}
+				});
 				if (gen.nextDouble() < m_startedGame.getDifficulty().getMinesPosibility()) 
 				{
 					currButton.makeMine();
@@ -100,7 +106,10 @@ public class Gui
 		}
 		m_startedGame.setMinesLeft(minesLeft);
     	setMinesLeft(minesLeft);
-		System.out.println("Minen gefunden:" + minesLeft);
+    	m_fieldPanel.setVisible(true);
+    	
+    	// Debug only
+    	// System.out.println("Minen gefunden:" + minesLeft);
 	}
 	
 	//Rückgabe Position des gesuchten Buttons
@@ -157,7 +166,8 @@ public class Gui
         	}
         }
         
-        System.out.println(count);
+        // Debug only
+        // System.out.println(count);
         return count;
     }
 
@@ -183,6 +193,19 @@ public class Gui
         		}
         	}
         }
+    }
+    
+    public void exposeAll()
+    {
+		MinesweeperButton currButton;
+		for (Component comp : m_fieldPanel.getComponents())
+		{
+			if (comp instanceof MinesweeperButton)
+			{
+				currButton = (MinesweeperButton) comp;
+				currButton.doClick();
+			}
+		}
     }
 	
 		//Infoanzeige fuer Minen
@@ -252,7 +275,7 @@ public class Gui
 		};
 		
 		//Initialisierung Startknopf
-		JButton startGameBtn = new JButton("Start");
+		JButton startGameBtn = new JButton("Reset");
 		startGameBtn.addActionListener(startGameActionListener);
 		
 		//Dropdown erstellen

@@ -1,6 +1,7 @@
 package minesweeper;
 
 import java.awt.Color;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,10 @@ public class MinesweeperButton extends JButton
 		m_gridLocation = new GridLocation(posX, posY);
 		
 		setIcon(INIT_ICON);
-		setText("0");
+		setMargin(new Insets(0, 0, 0, 0));
+		
+		// Debug only
+		//setText("0");
 	}
 	
 	@Override
@@ -52,6 +56,11 @@ public class MinesweeperButton extends JButton
 	public boolean isHidden()
 	{
 		return m_isHidden;
+	}
+	
+	public void setHidden(boolean hide)
+	{
+		m_isHidden = hide;
 	}
 	
 	public GridLocation getGridLocation()
