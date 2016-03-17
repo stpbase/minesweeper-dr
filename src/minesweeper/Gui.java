@@ -176,7 +176,8 @@ public class Gui
         System.out.println(count);
         return count;
     }
-	
+
+	//Aufdeckung der leeren Buttons	
     public void exposeNeighbors(MinesweeperButton btn) {
 		int xPos = (int) btn.getGridLocation().getX();
 		int yPos = (int) btn.getGridLocation().getY();
