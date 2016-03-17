@@ -74,26 +74,7 @@ public class Gui
 				currButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						MinesweeperButton btn = (MinesweeperButton) e.getSource();
-						if (btn.isMine())
-						{
-							btn.setIcon(MinesweeperButton.MINE_ICON);
-			            	if (btn.isHidden())
-			            	{
-			            		m_startedGame.mineExploded();
-			            		setLifesLeft(m_startedGame.getLifesLeft());
-			            		setMinesLeft(m_startedGame.getMinesLeft());
-			            		btn.setHidden(false);
-			            	}
-						}
-						else
-						{
-							int minesAround = countMines (btn.getGridLocation());
-							if (minesAround == 0)
-							{
-								exposeNeighbors(btn);
-							}
-							btn.setIcon(minesAround);
-						}
+					    exposeButton(btn);
 					}
 				});
 				if (gen.nextDouble() < m_startedGame.getDifficulty().getMinesPosibility()) 
@@ -110,6 +91,32 @@ public class Gui
     	
     	// Debug only
     	// System.out.println("Minen gefunden:" + minesLeft);
+	}
+	
+	private void exposeButton(MinesweeperButton btn)
+	{
+		if (btn.isHidden ())
+		{
+    		if (btn.isMine())
+    		{
+    			btn.setIcon(MinesweeperButton.MINE_ICON);
+        		btn.setHidden(false);
+    			m_startedGame.mineExploded();
+    			setLifesLeft(m_startedGame.getLifesLeft());
+    			setMinesLeft(m_startedGame.getMinesLeft());
+    		}
+    		else
+    		{
+    			int minesAround = countMines (btn.getGridLocation());
+    			btn.setIcon(minesAround);
+        		btn.setHidden(false);
+    			if (minesAround == 0)
+    			{
+    				exposeNeighbors(btn.getGridLocation());
+    			}
+    		}
+    		btn.setHidden(false);
+		}
 	}
 	
 	//Rückgabe Position des gesuchten Buttons
@@ -172,25 +179,20 @@ public class Gui
     }
 
 	//Aufdeckung der leeren Buttons	
-    public void exposeNeighbors(MinesweeperButton btn) {
-    	GridLocation btnLoc = btn.getGridLocation();
+    public void exposeNeighbors(GridLocation btnLoc) {
 		GridLocation currLoc = new GridLocation ();
 		MinesweeperButton lastFoundBtn;
-		
         for (int x=-1; x <= 1; x++)
         {
         	for (int y=-1; y <= 1; y++)
         	{
         		currLoc.setXPos(x+btnLoc.getXPos());
         		currLoc.setYPos(y+btnLoc.getYPos());
-        		if (!isOutside(currLoc) && !isMineAt (currLoc))
-        		{
-        			lastFoundBtn = findButtonOnGrid(currLoc);
-        			if (lastFoundBtn.isHidden())
-        			{
-        				lastFoundBtn.doClick();
-        			}
-        		}
+    			lastFoundBtn = findButtonOnGrid(currLoc);
+    			if (!isOutside(currLoc) && !lastFoundBtn.isMine() && lastFoundBtn.isHidden())
+    			{
+    				exposeButton(lastFoundBtn);
+    			}
         	}
         }
     }
@@ -203,7 +205,7 @@ public class Gui
 			if (comp instanceof MinesweeperButton)
 			{
 				currButton = (MinesweeperButton) comp;
-				currButton.doClick();
+				exposeButton(currButton);
 			}
 		}
     }

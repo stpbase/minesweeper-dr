@@ -43,18 +43,6 @@ public class MinesweeperButton extends JButton
 		//setText("0");
 	}
 	
-	@Override
-	public void doClick()
-	{
-		// Debug only
-		// System.out.println("Click ausgefuehrt!");
-		if (isHidden ())
-		{
-			m_isHidden = false;
-		    super.doClick();
-		}
-	}
-	
 	public boolean isHidden()
 	{
 		return m_isHidden;
