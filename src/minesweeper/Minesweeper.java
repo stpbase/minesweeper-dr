@@ -31,10 +31,9 @@ public class Minesweeper implements ActionListener
 		}
 		else
 		{
-		    m_minesweeperGui.paint();
-		    
+		    m_minesweeperGui.paint();		    
 		}
-		System.out.println("Das ist ein Test");
+		System.out.println("Das Spiel wurde richtig gestartet - Viel Spass!");
 	}
 	
 	//Dropdown Feld für die Schwierigkeit des Spiels
@@ -45,8 +44,10 @@ public class Minesweeper implements ActionListener
 			JComboBox<?> diffLevel = (JComboBox<?>)e.getSource();			
 			setDifficulty(diffLevel.getSelectedItem().toString());
 			m_minesweeperGui.refresh();
+			m_minesweeperGui.setLivesLeft(3);
 		}
 		startGame();
+		
 	}
 	
 	//Gibt aus wieviele Mine vorhanden sind
@@ -63,8 +64,13 @@ public class Minesweeper implements ActionListener
 	public int getLivesLeft() {
 		return m_livesLeft;
 	}
+	
+	//Setzt Anzahl Leben
+	public void setLivesLeft(int lives) {
+		this.m_livesLeft = lives;
+	}
 
-	//Sobald verloren wurde zählt es die Leben ab
+	//Sobald eine Mine gefunden wurde zieht es ein Leben ab
 	public void mineExploded() {
 		m_livesLeft--;
 		m_minesLeft--;
