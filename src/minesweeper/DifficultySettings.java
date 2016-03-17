@@ -1,8 +1,19 @@
 package minesweeper;
 
+import java.util.HashMap;
+import java.util.Map;
+
 //Passt die Anzahl Felder und die grösse des Fensters an die Schwierigkeitsgrade
 public class DifficultySettings 
 {	
+	//Schwierigkeitsgrad
+	@SuppressWarnings("serial")
+	public static final Map<String, Integer> LEVELS = new HashMap<String, Integer>() {{
+		put("Leicht", 5);
+		put("Mittel", 7); 
+		put("Schwer", 10); 
+	}};
+
 	private int m_xFields;
 	private int m_yFields;
 	

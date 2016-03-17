@@ -2,24 +2,14 @@ package minesweeper;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JComboBox;
 
-@SuppressWarnings("serial")
 public class Minesweeper implements ActionListener
 {
-	//Schwierigkeitsgrad
-	public static final Map<String, Integer> LEVELS = new HashMap<String, Integer>() {{
-		put("Leicht", 5);
-		put("Mittel", 7); 
-		put("Schwer", 10); 
-	}};
-
     public final static double MINES_PERCENTAGE = 0.15;
     private int m_minesLeft;
-    private int m_livesLeft;
+    private int m_livesLeft = 3;
 	
 	//Gui fuer Minesweeper
 	private Gui m_minesweeperGui;
@@ -30,8 +20,6 @@ public class Minesweeper implements ActionListener
 	public Minesweeper()
 	{
 		m_minesweeperGui = new Gui(this);
-		m_minesweeperGui.setLivesLeft(4);
-		m_minesweeperGui.setMinesFound(4);
 	}
 	
 	//
@@ -65,11 +53,6 @@ public class Minesweeper implements ActionListener
 	public int getMinesLeft() {
 		return m_minesLeft;
 	}
-
-	//Sobald auf eine Mine geklickt wir, wird der Counter herunter gesetzt
-	public void minusMines(int mines) {
-		this.m_minesLeft = m_minesLeft - mines;
-	}
 	
 	//Setzt die Minen
 	public void setMinesLeft(int mines) {
@@ -82,8 +65,9 @@ public class Minesweeper implements ActionListener
 	}
 
 	//Sobald verloren wurde zählt es die Leben ab
-	public void minusLives(int lives) {
-		this.m_livesLeft = m_livesLeft - lives;
+	public void mineExploded() {
+		m_livesLeft--;
+		m_minesLeft--;
 	}
 
 	public String getDifficulty() {
@@ -93,7 +77,9 @@ public class Minesweeper implements ActionListener
 	//Setzt Groesse des Fensters bei der Schwierigkeit und Anzahl Felder
 	public void setDifficulty(String level) {
 		this.m_difficulty = level;
-		DifficultySettings diffSettings = new DifficultySettings (LEVELS.get(level), LEVELS.get(level));
+		DifficultySettings diffSettings = new DifficultySettings (
+				DifficultySettings.LEVELS.get(level), 
+				DifficultySettings.LEVELS.get(level));
 
 		m_minesweeperGui.setFieldPanelSize(
 				diffSettings.getWindowWidth(), 

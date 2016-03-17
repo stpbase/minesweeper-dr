@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
@@ -18,9 +17,6 @@ import javax.swing.JTextField;
 
 public class Gui
 {
-	//Abstaende zwischen Panels
-	private static final int BORDER_SPACING = 20;
-	
 	//Groesse der Felder
 	public static final int FIELD_HEIGHT = 60;
 	public static final int FIELD_WIDTH = 60;
@@ -32,11 +28,9 @@ public class Gui
 	private Minesweeper m_startedGame;
 	
 	//Textanzeige definieren
-	private JTextField m_minesFound;
+	private JTextField m_minesLeft;
 	private JTextField m_livesLeft;
-	
-    private static MinesweeperButton m_fields[][];
-	
+		
 	public Gui (Minesweeper minesweeper)
 	{
 		//Minesweeper start
@@ -94,8 +88,9 @@ public class Gui
 			            if (btn.isMine())
 			            {
 			            	btn.setIcon(MinesweeperButton.MINE_ICON);
-			            	m_startedGame.minusLives(1);
-			            	m_startedGame.minusMines(1);
+			            	m_startedGame.mineExploded();
+			            	setLivesLeft(m_startedGame.getLivesLeft());
+			            	setMinesLeft(m_startedGame.getMinesLeft());
 			            }
 			            else
 			            {
@@ -117,11 +112,12 @@ public class Gui
 			}
 		}
 		m_startedGame.setMinesLeft(minesLeft);
+    	setMinesLeft(minesLeft);
 		System.out.println("Minen gefunden:" + minesLeft);
 	}
 	
 	//Rückgabe Position des gesuchten Buttons
-	private MinesweeperButton findButtonAt (int x, int y)
+	private MinesweeperButton findButtonOnGrid (GridLocation loc)
 	{
 		MinesweeperButton currButton;
 		for (Component comp : m_fieldPanel.getComponents())
@@ -129,7 +125,7 @@ public class Gui
 			if (comp instanceof MinesweeperButton)
 			{
 				currButton = (MinesweeperButton) comp;
-				if (currButton.getGridLocation().equals(new Point(x, y)))
+				if (currButton.getGridLocation().equals(loc))
 				{
 					return currButton;
 				}
@@ -139,34 +135,34 @@ public class Gui
 	}
 	
 	//Rückgabe ob es eine Mine ist oder nicht
-	private boolean isMineAt (int x, int y)
+	private boolean isMineAt (GridLocation loc)
 	{
-		return findButtonAt(x, y).isMine();
+		return findButtonOnGrid(loc).isMine();
 	}
 	
 	//Schaut ob es innerhalb oder ausserhalb des Feldes ist
-	private boolean isOutside (int x, int y)
+	private boolean isOutside (GridLocation loc)
 	{
-		int xyCount = Minesweeper.LEVELS.get(m_startedGame.getDifficulty());
-		return (x <= 0 || y <= 0 || x > xyCount || y > xyCount);
+		int xyCount = DifficultySettings.LEVELS.get(m_startedGame.getDifficulty());
+		return (loc.getXPos() <= 0 
+				|| loc.getYPos() <= 0 
+				|| loc.getXPos() > xyCount 
+				|| loc.getYPos() > xyCount);
 	}
 	
 	//Anzahl Minen werden gezählt
-	public int countMines(Point point) 
+	public int countMines(GridLocation loc) 
 	{
-		int xPos = (int) point.getX();
-		int yPos = (int) point.getY();
-		int lookX = xPos;
-		int lookY = yPos;
+		GridLocation currLoc = new GridLocation ();
 
 		int count = 0;
         for (int x=-1; x <= 1; x++)
         {
         	for (int y=-1; y <= 1; y++)
         	{
-        		lookX = x+xPos;
-        		lookY = y+yPos;
-        		if (!isOutside(lookX, lookY) && isMineAt (lookX, lookY))
+        		currLoc.setXPos(x+loc.getXPos());
+        		currLoc.setYPos(y+loc.getYPos());
+        		if (!isOutside(currLoc) && isMineAt (currLoc))
         		{
         			count++;
         		}
@@ -179,22 +175,20 @@ public class Gui
 
 	//Aufdeckung der leeren Buttons	
     public void exposeNeighbors(MinesweeperButton btn) {
-		int xPos = (int) btn.getGridLocation().getX();
-		int yPos = (int) btn.getGridLocation().getY();
-		int lookX = xPos;
-		int lookY = yPos;
+    	GridLocation btnLoc = btn.getGridLocation();
+		GridLocation currLoc = new GridLocation ();
 		MinesweeperButton lastFoundBtn;
 		
         for (int x=-1; x <= 1; x++)
         {
         	for (int y=-1; y <= 1; y++)
         	{
-        		lookX = x+xPos;
-        		lookY = y+yPos;
-        		if (!isOutside(lookX, lookY) && !isMineAt (lookX, lookY))
+        		currLoc.setXPos(x+btnLoc.getXPos());
+        		currLoc.setYPos(y+btnLoc.getYPos());
+        		if (!isOutside(currLoc) && !isMineAt (currLoc))
         		{
-        			lastFoundBtn = findButtonAt(lookX, lookY);
-        			if (lastFoundBtn.isEnabled())
+        			lastFoundBtn = findButtonOnGrid(currLoc);
+        			if (lastFoundBtn.isHidden())
         			{
         				lastFoundBtn.doClick();
         			}
@@ -204,9 +198,9 @@ public class Gui
     }
 	
 		//Infoanzeige fuer Minen
-	public void setMinesFound(int countMines)
+	public void setMinesLeft(int countMines)
 	{
-		m_minesFound.setText(String.valueOf(countMines));
+		m_minesLeft.setText(String.valueOf(countMines));
 	}
 	
 		//Infoanzeige fuer Leben
@@ -225,10 +219,10 @@ public class Gui
 		infoPanel.setLayout(flowLayout);
 
 		//Informationen für Infopanel Minen
-		JLabel minesFoundLabel = new JLabel();
-		minesFoundLabel.setText("Minen gefunden");
-		m_minesFound = new JTextField("00", 2);
-		m_minesFound.setEditable(false);
+		JLabel minesLeftLabel = new JLabel();
+		minesLeftLabel.setText("Minen");
+		m_minesLeft = new JTextField("00", 2);
+		m_minesLeft.setEditable(false);
 		
 		//Informationen für Infopanel Leben
 		JLabel livesLeftLabel = new JLabel();
@@ -237,8 +231,8 @@ public class Gui
 		m_livesLeft.setEditable(false);
 		
 		//hinzufuegen der Komponenten auf den Infopanel
-		infoPanel.add(minesFoundLabel);
-		infoPanel.add(m_minesFound);
+		infoPanel.add(minesLeftLabel);
+		infoPanel.add(m_minesLeft);
 		infoPanel.add(livesLeftLabel);
 		infoPanel.add(m_livesLeft);
 		
@@ -262,7 +256,7 @@ public class Gui
 		
 		//Dropdown erstellen
 		JComboBox<String> difficultyLevelComboBox = new JComboBox<>(
-			Minesweeper.LEVELS.keySet().toArray(new String[Minesweeper.LEVELS.size()])
+			DifficultySettings.LEVELS.keySet().toArray(new String[DifficultySettings.LEVELS.size()])
 		);
 		difficultyLevelComboBox.setSelectedIndex(0);
 		difficultyLevelComboBox.addActionListener(m_startedGame);

@@ -1,7 +1,6 @@
 package minesweeper;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,11 +27,12 @@ public class MinesweeperButton extends JButton
 	}};
 	
 	private boolean m_isMine = false;
-	private Point m_gridLocation;
+	private boolean m_isHidden = true;
+	private GridLocation m_gridLocation;
 	
 	public MinesweeperButton (int posX, int posY)
 	{
-		m_gridLocation = new Point(posX, posY);
+		m_gridLocation = new GridLocation(posX, posY);
 		
 		setIcon(INIT_ICON);
 		setText("0");
@@ -41,12 +41,20 @@ public class MinesweeperButton extends JButton
 	@Override
 	public void doClick()
 	{
-		super.doClick();
 		System.out.println("Click ausgefuehrt!");
-		setEnabled(false);
+		if (isHidden ())
+		{
+			m_isHidden = false;
+		    super.doClick();
+		}
 	}
 	
-	public Point getGridLocation()
+	public boolean isHidden()
+	{
+		return m_isHidden;
+	}
+	
+	public GridLocation getGridLocation()
 	{
 		return m_gridLocation;
 	}
