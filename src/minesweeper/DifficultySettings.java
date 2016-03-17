@@ -1,5 +1,6 @@
 package minesweeper;
 
+//Passt die Anzahl Felder und die grösse des Fensters an die Schwierigkeitsgrade
 public class DifficultySettings 
 {	
 	private int m_xFields;
