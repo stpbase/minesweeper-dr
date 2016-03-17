@@ -77,6 +77,7 @@ public class Gui
         //Felder initialisieren
         MinesweeperButton currButton = null;
         int minesLeft = 0;
+        int livesLeft = 3;
 		for(int y = 1; y <= rows; y++) 
 		{
 			for (int x = 1; x <= cols; x++) 
@@ -111,8 +112,8 @@ public class Gui
 				m_fieldPanel.add(currButton);
 			}
 		}
-		m_startedGame.setMinesLeft(minesLeft);
-    	setMinesLeft(minesLeft);
+		setMinesLeft(minesLeft);
+		setLivesLeft(livesLeft);
 		System.out.println("Minen gefunden:" + minesLeft);
 	}
 	
@@ -250,8 +251,8 @@ public class Gui
 		JPanel mainPanel = new JPanel();	
 		mainPanel.setLayout(flowLayout);
 				
-		//Initialisierung Startknopf
-		JButton startGameBtn = new JButton("Start");
+		//Initialisierung Resetknopf
+		JButton startGameBtn = new JButton("Reset");
 		startGameBtn.addActionListener(m_startedGame);
 		
 		//Dropdown erstellen
