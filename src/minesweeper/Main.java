@@ -1,5 +1,6 @@
 package minesweeper;
 
+//Startet das Game
 public class Main 
 {
 	private static Minesweeper m_startedGame;
