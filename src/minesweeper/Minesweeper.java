@@ -18,7 +18,7 @@ public class Minesweeper
 		m_minesweeperGui = new Gui(this);
 	}
 	
-	//
+	// Aufruf "Start" des Spiels
 	public void startGame()
 	{
 		m_minesLeft = 0;

@@ -1,5 +1,10 @@
 package minesweeper;
 
+/**
+ * @author diana
+ *
+ */
+
 //Startet das Game
 public class Main 
 {

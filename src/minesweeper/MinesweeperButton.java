@@ -31,6 +31,7 @@ public class MinesweeperButton extends JButton
 	private boolean m_isHidden = true;
 	private GridLocation m_gridLocation;
 	
+	// Initialisierung Felder
 	public MinesweeperButton (int posX, int posY)
 	{
 		m_gridLocation = new GridLocation(posX, posY);
@@ -45,7 +46,8 @@ public class MinesweeperButton extends JButton
 	@Override
 	public void doClick()
 	{
-		System.out.println("Click ausgefuehrt!");
+		// Debug only
+		// System.out.println("Click ausgefuehrt!");
 		if (isHidden ())
 		{
 			m_isHidden = false;
