@@ -1,6 +1,6 @@
 package minesweeper;
 
-import java.awt.Color;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +35,9 @@ public class MinesweeperButton extends JButton
 		m_gridLocation = new GridLocation(posX, posY);
 		
 		setIcon(INIT_ICON);
-		setText("0");
+		setMargin(new Insets(0, 0, 0, 0));
+		// Debug only
+		//setText("0");
 	}
 	
 	@Override
@@ -68,8 +70,8 @@ public class MinesweeperButton extends JButton
 	{
 		m_isMine = true;
 		
-		// DEBUG
-		this.setBackground(new Color(100));
+		// DEBUG only
+		//this.setBackground(new Color(100));
 	}
 	
 	public boolean isMine ()
