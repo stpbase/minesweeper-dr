@@ -76,10 +76,11 @@ public class Gui
 		m_fieldPanel.removeAll();
 		m_fieldGrid.setRows(rows);
 		m_fieldGrid.setColumns(cols);
-		
+	
+	//generierung Zufallszahl	
         Random gen = new Random();
 
-        // Felder initialisieren
+        //Felder initialisieren
         MinesweeperButton currButton = null;
         int minesLeft = 0;
 		for(int y = 1; y <= rows; y++) 
@@ -119,6 +120,7 @@ public class Gui
 		System.out.println("Minen gefunden:" + minesLeft);
 	}
 	
+	//Rückgabe Position des gesuchten Buttons
 	private MinesweeperButton findButtonAt (int x, int y)
 	{
 		MinesweeperButton currButton;
@@ -136,17 +138,20 @@ public class Gui
 		return null;
 	}
 	
+	//Rückgabe ob es eine Mine ist oder nicht
 	private boolean isMineAt (int x, int y)
 	{
 		return findButtonAt(x, y).isMine();
 	}
 	
+	//Schaut ob es innerhalb oder ausserhalb des Feldes ist
 	private boolean isOutside (int x, int y)
 	{
 		int xyCount = Minesweeper.LEVELS.get(m_startedGame.getDifficulty());
 		return (x <= 0 || y <= 0 || x > xyCount || y > xyCount);
 	}
 	
+	//Anzahl Minen werden gezählt
 	public int countMines(Point point) 
 	{
 		int xPos = (int) point.getX();
@@ -218,15 +223,15 @@ public class Gui
 		JPanel infoPanel = new JPanel();
 		infoPanel.setLayout(flowLayout);
 
-		//Informationen f�r Infopanel Minen
+		//Informationen für Infopanel Minen
 		JLabel minesFoundLabel = new JLabel();
 		minesFoundLabel.setText("Minen gefunden");
 		m_minesFound = new JTextField("00", 2);
 		m_minesFound.setEditable(false);
 		
-		//Informationen f�r Infopanel Leben
+		//Informationen für Infopanel Leben
 		JLabel livesLeftLabel = new JLabel();
-		livesLeftLabel.setText("Noch �brige Leben");
+		livesLeftLabel.setText("Noch übrige Leben");
 		m_livesLeft = new JTextField("00", 2);
 		m_livesLeft.setEditable(false);
 		
