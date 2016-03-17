@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -29,49 +30,35 @@ public class Gui
 	
 	//Textanzeige definieren
 	private JTextField m_minesLeft;
-	private JTextField m_livesLeft;
+	private JTextField m_lifesLeft;
 		
 	public Gui (Minesweeper minesweeper)
 	{
 		//Minesweeper start
 		m_startedGame = minesweeper;
-		
-		//Erzeugung MainFrame
-		m_mainFrame = new JFrame("MineSweeper DR");
-		
-		//Groesse des Fensters nicht veraenderbar
-		m_mainFrame.setResizable(false);
-		
-		//Beenden beim schliessen des Fensters
-		m_mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		//Neue Panels erstellen
-		m_fieldGrid = new GridLayout();
-		m_fieldPanel = new JPanel();
-		m_fieldPanel.setLayout(m_fieldGrid);
-		
-		//Anordnung der Panels
-		m_mainFrame.add(m_fieldPanel, BorderLayout.CENTER);
-		m_mainFrame.add(createInfoPanel(), BorderLayout.NORTH);
-		m_mainFrame.add(createMainPanel(), BorderLayout.SOUTH);
-		
 	}
 	
 	//Setze groesse des Fensters
-	public void setFieldPanelSize(int width, int height)
+	public void setFieldPanelSize()
 	{
+		int width = m_startedGame.getDifficulty().getCountYFields() * Gui.FIELD_WIDTH;
+		int height = m_startedGame.getDifficulty().getCountXFields() * Gui.FIELD_HEIGHT;
+		
 		m_mainFrame.setSize(width, height+100);
 		m_fieldPanel.setSize(width, height);
 	}
 	
 	//Neue Felder erstellen
-	public void createFields(int rows, int cols) 
+	public void createFields() 
 	{
+		int rows = m_startedGame.getDifficulty().getCountYFields();
+		int cols = m_startedGame.getDifficulty().getCountXFields();
+		
 		m_fieldPanel.removeAll();
 		m_fieldGrid.setRows(rows);
 		m_fieldGrid.setColumns(cols);
 	
-	//generierung Zufallszahl	
+	    //generierung Zufallszahl	
         Random gen = new Random();
 
         //Felder initialisieren
@@ -89,7 +76,7 @@ public class Gui
 			            {
 			            	btn.setIcon(MinesweeperButton.MINE_ICON);
 			            	m_startedGame.mineExploded();
-			            	setLivesLeft(m_startedGame.getLivesLeft());
+			            	setLifesLeft(m_startedGame.getLifesLeft());
 			            	setMinesLeft(m_startedGame.getMinesLeft());
 			            }
 			            else
@@ -103,7 +90,7 @@ public class Gui
 			            }
 			        }
 			    });
-				if (gen.nextDouble() < Minesweeper.MINES_PERCENTAGE) 
+				if (gen.nextDouble() < m_startedGame.getDifficulty().getMinesPosibility()) 
 				{
 					currButton.makeMine();
 					minesLeft++;
@@ -143,11 +130,12 @@ public class Gui
 	//Schaut ob es innerhalb oder ausserhalb des Feldes ist
 	private boolean isOutside (GridLocation loc)
 	{
-		int xyCount = DifficultySettings.LEVELS.get(m_startedGame.getDifficulty());
+		int xCount = m_startedGame.getDifficulty().getCountXFields();
+		int yCount = m_startedGame.getDifficulty().getCountYFields();
 		return (loc.getXPos() <= 0 
 				|| loc.getYPos() <= 0 
-				|| loc.getXPos() > xyCount 
-				|| loc.getYPos() > xyCount);
+				|| loc.getXPos() > xCount 
+				|| loc.getYPos() > yCount);
 	}
 	
 	//Anzahl Minen werden gezählt
@@ -204,9 +192,9 @@ public class Gui
 	}
 	
 		//Infoanzeige fuer Leben
-	public void setLivesLeft(int livesLeft)
+	public void setLifesLeft(int livesLeft)
 	{
-		m_livesLeft.setText(String.valueOf(livesLeft));
+		m_lifesLeft.setText(String.valueOf(livesLeft));
 	}	
 	
 	private JPanel createInfoPanel()
@@ -227,19 +215,18 @@ public class Gui
 		//Informationen für Infopanel Leben
 		JLabel livesLeftLabel = new JLabel();
 		livesLeftLabel.setText("Noch übrige Leben");
-		m_livesLeft = new JTextField("00", 2);
-		m_livesLeft.setEditable(false);
+		m_lifesLeft = new JTextField("00", 2);
+		m_lifesLeft.setEditable(false);
 		
 		//hinzufuegen der Komponenten auf den Infopanel
 		infoPanel.add(minesLeftLabel);
 		infoPanel.add(m_minesLeft);
 		infoPanel.add(livesLeftLabel);
-		infoPanel.add(m_livesLeft);
+		infoPanel.add(m_lifesLeft);
 		
 		//Ausgabe des Infopanels
 		return infoPanel;
 	}
-	
 	
 	private JPanel createMainPanel()
 	{
@@ -249,17 +236,36 @@ public class Gui
 		//Mainpanel erstellen
 		JPanel mainPanel = new JPanel();	
 		mainPanel.setLayout(flowLayout);
-				
+		
+		ActionListener startGameActionListener = new ActionListener()
+		{
+			public void actionPerformed (ActionEvent e) 
+			{
+				if (e.getSource() instanceof JComboBox<?>)
+				{
+					JComboBox<?> diffLevel = (JComboBox<?>)e.getSource();			
+					m_startedGame.setDifficulty((Level) diffLevel.getSelectedItem());
+					refresh();
+				}
+				m_startedGame.startGame();
+			}
+		};
+		
 		//Initialisierung Startknopf
 		JButton startGameBtn = new JButton("Start");
-		startGameBtn.addActionListener(m_startedGame);
+		startGameBtn.addActionListener(startGameActionListener);
 		
 		//Dropdown erstellen
-		JComboBox<String> difficultyLevelComboBox = new JComboBox<>(
-			DifficultySettings.LEVELS.keySet().toArray(new String[DifficultySettings.LEVELS.size()])
-		);
+		JComboBox<Level> difficultyLevelComboBox = new JComboBox<>(
+				new DefaultComboBoxModel<Level>());
+		// Einträge erstellen
+		for (Level lvl : Level.LEVELS)
+		{
+		    difficultyLevelComboBox.addItem(lvl);
+		}
+		
 		difficultyLevelComboBox.setSelectedIndex(0);
-		difficultyLevelComboBox.addActionListener(m_startedGame);
+		difficultyLevelComboBox.addActionListener(startGameActionListener);
 		
 		mainPanel.add(difficultyLevelComboBox);
 		mainPanel.add(startGameBtn);
@@ -277,14 +283,48 @@ public class Gui
 		return flowLayout;
 	}
 	
-	// Sichtbar machen
+	private void setLifesLeft()
+	{
+		int lifesLeft = m_startedGame.getDifficulty().getCountLives();
+		m_lifesLeft.setText(String.valueOf(lifesLeft));
+		m_startedGame.setLifesLeft(lifesLeft);
+	}
+	
+	// Felder erstellen und sichtbar machen
 	public void paint() 
 	{
+		//Erzeugung MainFrame
+		m_mainFrame = new JFrame("MineSweeper DR");
+		
+		//Groesse des Fensters nicht veraenderbar
+		m_mainFrame.setResizable(false);
+		
+		//Beenden beim schliessen des Fensters
+		m_mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		//Neue Panels erstellen
+		m_fieldGrid = new GridLayout();
+		m_fieldPanel = new JPanel();
+		m_fieldPanel.setLayout(m_fieldGrid);
+		
+		//Anordnung der Panels
+		m_mainFrame.add(m_fieldPanel, BorderLayout.CENTER);
+		m_mainFrame.add(createInfoPanel(), BorderLayout.NORTH);
+		m_mainFrame.add(createMainPanel(), BorderLayout.SOUTH);
+
+		setLifesLeft();
+		
+		setFieldPanelSize();
+		createFields();
 		m_mainFrame.setVisible(true);		
 	}
 	
 	//Spiel refresh erstellen
-	public void refresh() {
-		m_mainFrame.repaint();		
+	public void refresh() 
+	{
+		setLifesLeft();
+		setFieldPanelSize();
+		createFields();
+		m_mainFrame.repaint();
 	}
 }

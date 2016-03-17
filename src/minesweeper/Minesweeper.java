@@ -1,20 +1,14 @@
 package minesweeper;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JComboBox;
-
-public class Minesweeper implements ActionListener
+public class Minesweeper
 {
-    public final static double MINES_PERCENTAGE = 0.15;
     private int m_minesLeft;
-    private int m_livesLeft = 3;
+    private int m_lifesLeft;
 	
 	//Gui fuer Minesweeper
 	private Gui m_minesweeperGui;
 	private boolean m_gameStarted = false;
-	private String m_difficulty;
+	private Level m_difficulty;
 	
 	//Minesweeper Gui wird abgerufen
 	public Minesweeper()
@@ -25,6 +19,9 @@ public class Minesweeper implements ActionListener
 	//
 	public void startGame()
 	{
+		m_minesLeft = 0;
+		m_lifesLeft = 0;
+		
 		if (m_gameStarted)
 		{
 			m_minesweeperGui.refresh();
@@ -32,21 +29,8 @@ public class Minesweeper implements ActionListener
 		else
 		{
 		    m_minesweeperGui.paint();
-		    
+		    m_gameStarted = true;
 		}
-		System.out.println("Das ist ein Test");
-	}
-	
-	//Dropdown Feld für die Schwierigkeit des Spiels
-	public void actionPerformed (ActionEvent e) 
-	{
-		if (e.getSource() instanceof JComboBox<?>)
-		{
-			JComboBox<?> diffLevel = (JComboBox<?>)e.getSource();			
-			setDifficulty(diffLevel.getSelectedItem().toString());
-			m_minesweeperGui.refresh();
-		}
-		startGame();
 	}
 	
 	//Gibt aus wieviele Mine vorhanden sind
@@ -60,32 +44,28 @@ public class Minesweeper implements ActionListener
 	}
 
 	//Gibt Anzahl Leben zurück
-	public int getLivesLeft() {
-		return m_livesLeft;
+	public int getLifesLeft() {
+		return m_lifesLeft;
+	}
+	
+	public void setLifesLeft(int lifesLeft)
+	{
+		m_lifesLeft = lifesLeft;
 	}
 
 	//Sobald verloren wurde zählt es die Leben ab
 	public void mineExploded() {
-		m_livesLeft--;
+		m_lifesLeft--;
 		m_minesLeft--;
 	}
 
-	public String getDifficulty() {
+	public Level getDifficulty() {
 		return m_difficulty;
 	}
 
-	//Setzt Groesse des Fensters bei der Schwierigkeit und Anzahl Felder
-	public void setDifficulty(String level) {
+	//Setzt Schwierigkeit
+	public void setDifficulty(Level level) {
 		this.m_difficulty = level;
-		DifficultySettings diffSettings = new DifficultySettings (
-				DifficultySettings.LEVELS.get(level), 
-				DifficultySettings.LEVELS.get(level));
-
-		m_minesweeperGui.setFieldPanelSize(
-				diffSettings.getWindowWidth(), 
-				diffSettings.getWindowHeight());
-		m_minesweeperGui.createFields(
-				diffSettings.getXFields(), 
-				diffSettings.getYFields());
+		this.m_lifesLeft = level.getCountLives();
 	}
 }
